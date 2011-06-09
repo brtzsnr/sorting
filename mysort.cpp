@@ -94,7 +94,7 @@ int main(int argc, char **argv) {
 
   // print("sorted");
 
-#if 1
+#if 0
   int count = 0;
   for (int i = 1; i < size; i++) {
     if (dbuf[i - 1] > dbuf[i]) {

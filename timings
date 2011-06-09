@@ -1,0 +1,24 @@
+Running mysort
+Finished after 3.120
+3.00user 0.34system 0:03.35elapsed 99%CPU (0avgtext+0avgdata 0maxresident)k
+0inputs+0outputs (0major+195625minor)pagefaults 0swaps
+
+Running stdsort
+Finished after 6.06
+7.41user 0.25system 0:07.67elapsed 99%CPU (0avgtext+0avgdata 0maxresident)k
+0inputs+0outputs (0major+98006minor)pagefaults 0swaps
+
+Running threadsort
+6.21user 0.21system 0:02.20elapsed 291%CPU (0avgtext+0avgdata 0maxresident)k
+0inputs+0outputs (0major+98002minor)pagefaults 0swaps
+
+Running tbbsort
+Finished after 7.94
+9.12user 0.38system 0:02.54elapsed 374%CPU (0avgtext+0avgdata 0maxresident)k
+0inputs+0outputs (0major+98376minor)pagefaults 0swaps
+
+Running steelsort
+Finished after 5.82
+5.67user 0.39system 0:02.27elapsed 267%CPU (0avgtext+0avgdata 0maxresident)k
+0inputs+0outputs (0major+195688minor)pagefaults 0swaps
+
