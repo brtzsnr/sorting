@@ -1,0 +1,8 @@
+This repository is dedicated to the sorting problem described here:
+
+http://codegolf.stackexchange.com/questions/2774/contest-fastest-way-to-sort-a-big-array-of-gaussian-distributed-data
+
+The sources belong to their authors. Feel free to add more sorting algorithms.
+
+I'm the author of mysort.cpp. Using radix sort for doubles is Mihai Patrascu's
+idea. I just made it faster. Feel free to improve the solution.
