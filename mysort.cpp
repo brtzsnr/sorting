@@ -1,18 +1,13 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 #include <algorithm>
 #include <ctime>
-#include <sys/mman.h>
-
-using std::fill;
-using std::reverse;
 
 typedef unsigned long long ull;
 
 int size;
 double *dbuf, *copy;
-int cnt[1 << 16];
+int cnt[8][1 << 16];
 
 void print(const char *message)
 {
@@ -29,40 +24,59 @@ void print(const char *message)
   }
 }
 
-void sort(int s, int e)
+void sort()
 {
+  const int step = 10;
+  const int start = 24;
+  ull mask = (1ULL << step) - 1;
+
   ull *ibuf = (ull *) dbuf;
-  ull mask = (1 << (e - s)) - 1;
-
-  clock_t c1;
-  
-  c1 = clock();
-  fill(cnt, cnt + (1 << (e - s)), 0);
   for (int i = 0; i < size; i++) {
-    int p = (ibuf[i] >> s) & mask;
-    cnt[p]++;
+    for (int w = start, v = 0; w < 64; w += step, v++) {
+      int p = (ibuf[i] >> w) & mask;
+      cnt[v][p]++;
+    }
   }
-  printf("1 %.3f\n", (double) ((clock() - c1)) / CLOCKS_PER_SEC);
 
-  c1 = clock();
-  int sum = 0;
+  int sum[8] = { 0 };
   for (int i = 0; i <= mask; i++) {
-    int tmp = sum + cnt[i];
-    cnt[i] = sum;
-    sum = tmp;
+    for (int w = start, v = 0; w < 64; w += step, v++) {
+      int tmp = sum[v] + cnt[v][i];
+      cnt[v][i] = sum[v];
+      sum[v] = tmp;
+    }
   }
-  printf("2 %.3f\n", (double) ((clock() - c1)) / CLOCKS_PER_SEC);
 
-  c1 = clock();
-  for (int i = 0; i < size; i++) {
-    int p = (ibuf[i] >> s) & mask;
-    copy[cnt[p]++] = dbuf[i];
+  for (int w = start, v = 0; w < 64; w += step, v++) {
+    ull *ibuf = (ull *) dbuf;
+    for (int i = 0; i < size; i++) {
+      int p = (ibuf[i] >> w) & mask;
+      copy[cnt[v][p]++] = dbuf[i];
+    }
+
+    double *tmp = copy;
+    copy = dbuf;
+    dbuf = tmp;
   }
-  printf("3 %.3f\n", (double) ((clock() - c1)) / CLOCKS_PER_SEC);
 
-  double *tmp = copy;
-  copy = dbuf;
-  dbuf = tmp;
+  std::reverse(dbuf, dbuf + size);
+  for (int p = 0; p < size; p++)
+    if (dbuf[p] >= 0.) {
+      std::reverse(dbuf + p, dbuf + size);
+      break;
+    }
+
+  // Insertion sort
+  for (int i = 1; i < size; i++) {
+    double value = dbuf[i];
+    if (value < dbuf[i - 1]) {
+      dbuf[i] = dbuf[i - 1];
+      int p = i - 1;
+      for (; p > 0 && value < dbuf[p - 1]; p--)
+        dbuf[p] = dbuf[p - 1];
+      dbuf[p] = value;
+    }
+  }
 }
 
 int main(int argc, char **argv) {
@@ -75,22 +89,22 @@ int main(int argc, char **argv) {
   fclose(f);
 
   clock_t c0 = clock();
-
-  int step = 11;
-  for (int i = 0; i < 64; i += step) {
-    sort(i, i + step);
-  }
-
-  int p;
-  for (p = 0; p < size; p++)
-    if (dbuf[p] < 0) break;
-  reverse(dbuf, dbuf + p);
-  reverse(dbuf, dbuf + size);
-  print("sorted");
-
+  sort();
   printf("Finished after %.3f\n", (double) ((clock() - c0)) / CLOCKS_PER_SEC);
+
+  // print("sorted");
+
+#if 1
+  int count = 0;
+  for (int i = 1; i < size; i++) {
+    if (dbuf[i - 1] > dbuf[i]) {
+      count++;
+    }
+  }
+  printf("wrong in %d\n", count);
  
-  // delete [] dbuf;
-  // delete [] copy;
+  delete [] dbuf;
+  delete [] copy;
+#endif
   return 0;
 }
