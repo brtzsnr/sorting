@@ -33,7 +33,7 @@ void sort()
   ull *ibuf = (ull *) dbuf;
   for (int i = 0; i < size; i++) {
     for (int w = start, v = 0; w < 64; w += step, v++) {
-      int p = (ibuf[i] >> w) & mask;
+      int p = (~ibuf[i] >> w) & mask;
       cnt[v][p]++;
     }
   }
@@ -50,7 +50,7 @@ void sort()
   for (int w = start, v = 0; w < 64; w += step, v++) {
     ull *ibuf = (ull *) dbuf;
     for (int i = 0; i < size; i++) {
-      int p = (ibuf[i] >> w) & mask;
+      int p = (~ibuf[i] >> w) & mask;
       copy[cnt[v][p]++] = dbuf[i];
     }
 
@@ -59,7 +59,6 @@ void sort()
     dbuf = tmp;
   }
 
-  std::reverse(dbuf, dbuf + size);
   for (int p = 0; p < size; p++)
     if (dbuf[p] >= 0.) {
       std::reverse(dbuf + p, dbuf + size);
