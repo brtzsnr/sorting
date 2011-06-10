@@ -1,4 +1,4 @@
-OBJECTS=mysort gsort stdsort threadsort tbbsort steelsort jonderry ForkJoinQuicksortTask
+OBJECTS=mysort gsort stdsort threadsort tbbsort steelsort jonderry zjarek ForkJoinQuicksortTask
 TBB=/home/ami650/src/gcc-4.6.0/tbb30_20110427oss/
 JAVA_HOME=/home/ami650/src/java/jdk1.7.0/
 
@@ -47,6 +47,12 @@ steelsort:
 	g++ -O3 -march=native -std=c++0x -DSPLIT=16 steelsort.cpp -o steelsort -pthread
 	echo Running $@
 	/usr/bin/time ./steelsort 50000000
+	echo
+
+zjarek:
+	g++ -O3 -march=native -std=c++0x -DSPLIT=16 zjarek.cpp -o zjarek -pthread
+	echo Running $@
+	/usr/bin/time ./zjarek
 	echo
 
 jonderry:
