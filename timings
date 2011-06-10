@@ -1,41 +1,45 @@
 Running mysort
 Finished after 2.860
-2.76user 0.30system 0:03.07elapsed 99%CPU (0avgtext+0avgdata 0maxresident)k
+2.72user 0.34system 0:03.07elapsed 99%CPU (0avgtext+0avgdata 0maxresident)k
 0inputs+0outputs (0major+195623minor)pagefaults 0swaps
 
 Running gsort
-set 0.270
+set 0.280
 phi 0.770
 moving 2.100
-shifting 0.790
-3.68user 0.49system 0:04.18elapsed 99%CPU (0avgtext+0avgdata 0maxresident)k
+shifting 0.780
+3.67user 0.48system 0:04.16elapsed 99%CPU (0avgtext+0avgdata 0maxresident)k
 0inputs+0outputs (0major+366642minor)pagefaults 0swaps
 
 Running stdsort
-Finished after 7.58
-9.26user 0.26system 0:09.52elapsed 99%CPU (0avgtext+0avgdata 0maxresident)k
+Finished after 7.61
+9.31user 0.23system 0:09.56elapsed 99%CPU (0avgtext+0avgdata 0maxresident)k
 0inputs+0outputs (0major+98002minor)pagefaults 0swaps
 
 Running threadsort
-7.71user 0.20system 0:02.65elapsed 298%CPU (0avgtext+0avgdata 0maxresident)k
+7.72user 0.20system 0:02.66elapsed 297%CPU (0avgtext+0avgdata 0maxresident)k
 0inputs+0outputs (0major+98001minor)pagefaults 0swaps
 
 Running tbbsort
 Finished after 9.58
-11.12user 0.30system 0:03.05elapsed 373%CPU (0avgtext+0avgdata 0maxresident)k
-0inputs+0outputs (2major+98293minor)pagefaults 0swaps
+11.10user 0.32system 0:03.07elapsed 371%CPU (0avgtext+0avgdata 0maxresident)k
+0inputs+0outputs (2major+98291minor)pagefaults 0swaps
 
-Running steelsort
-Finished after 4.2
-4.07user 0.34system 0:01.95elapsed 226%CPU (0avgtext+0avgdata 0maxresident)k
+Running damascussteel
+Finished after 4.22
+4.08user 0.35system 0:01.96elapsed 225%CPU (0avgtext+0avgdata 0maxresident)k
 0inputs+0outputs (0major+195686minor)pagefaults 0swaps
 
 Running jonderry
-5.52user 0.61system 0:06.13elapsed 99%CPU (0avgtext+0avgdata 0maxresident)k
+5.45user 0.68system 0:06.13elapsed 99%CPU (0avgtext+0avgdata 0maxresident)k
 0inputs+0outputs (0major+427528minor)pagefaults 0swaps
+
+Running zjarek
+7.72user 0.20system 0:02.66elapsed 297%CPU (0avgtext+0avgdata 0maxresident)k
+0inputs+0outputs (0major+98001minor)pagefaults 0swaps
 
 Running ForkJoinQuicksortTask
 Starting parallel computation
-12.86user 0.20system 0:02.24elapsed 582%CPU (0avgtext+0avgdata 0maxresident)k
-0inputs+0outputs (2major+207056minor)pagefaults 0swaps
+12.56user 0.23system 0:02.23elapsed 572%CPU (0avgtext+0avgdata 0maxresident)k
+0inputs+0outputs (2major+205353minor)pagefaults 0swaps
 

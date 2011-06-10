@@ -1,4 +1,4 @@
-OBJECTS=mysort gsort stdsort threadsort tbbsort steelsort jonderry zjarek ForkJoinQuicksortTask
+OBJECTS=mysort gsort stdsort threadsort tbbsort damascussteel jonderry zjarek ForkJoinQuicksortTask
 TBB=/home/ami650/src/gcc-4.6.0/tbb30_20110427oss/
 JAVA_HOME=/home/ami650/src/java/jdk1.7.0/
 
@@ -43,10 +43,10 @@ tbbsort:
 	/usr/bin/time ./tbbsort
 	echo
 
-steelsort:
-	g++ -O3 -march=native -std=c++0x -DSPLIT=16 steelsort.cpp -o steelsort -pthread
+damascussteel:
+	g++ -O3 -march=native -std=c++0x -DSPLIT=16 damascussteel.cpp -o damascussteel -pthread
 	echo Running $@
-	/usr/bin/time ./steelsort 50000000
+	/usr/bin/time ./damascussteel 50000000
 	echo
 
 zjarek:
