@@ -1,45 +1,55 @@
 Running mysort
-Finished after 2.810
-2.70user 0.32system 0:03.03elapsed 99%CPU (0avgtext+0avgdata 0maxresident)k
+Finished after 2.830
+2.73user 0.32system 0:03.05elapsed 99%CPU (0avgtext+0avgdata 0maxresident)k
 0inputs+0outputs (0major+195623minor)pagefaults 0swaps
 
 Running gsort
-set 0.270
-phi 0.780
-moving 2.090
+set 0.280
+phi 0.770
+moving 2.100
 shifting 0.790
-3.66user 0.51system 0:04.18elapsed 99%CPU (0avgtext+0avgdata 0maxresident)k
+3.68user 0.48system 0:04.17elapsed 99%CPU (0avgtext+0avgdata 0maxresident)k
 0inputs+0outputs (0major+366642minor)pagefaults 0swaps
 
 Running stdsort
-Finished after 7.61
-9.30user 0.25system 0:09.55elapsed 99%CPU (0avgtext+0avgdata 0maxresident)k
+Finished after 7.57
+9.26user 0.25system 0:09.52elapsed 99%CPU (0avgtext+0avgdata 0maxresident)k
 0inputs+0outputs (0major+98002minor)pagefaults 0swaps
 
 Running threadsort
-7.72user 0.20system 0:02.65elapsed 298%CPU (0avgtext+0avgdata 0maxresident)k
+7.72user 0.21system 0:02.67elapsed 297%CPU (0avgtext+0avgdata 0maxresident)k
 0inputs+0outputs (0major+98001minor)pagefaults 0swaps
 
 Running tbbsort
-Finished after 9.56
-11.09user 0.31system 0:03.06elapsed 372%CPU (0avgtext+0avgdata 0maxresident)k
+Finished after 9.53
+11.09user 0.28system 0:03.05elapsed 372%CPU (0avgtext+0avgdata 0maxresident)k
 0inputs+0outputs (2major+98289minor)pagefaults 0swaps
 
 Running damascussteel
-Finished after 4.14
-4.01user 0.34system 0:01.96elapsed 222%CPU (0avgtext+0avgdata 0maxresident)k
+Finished after 4
+3.88user 0.34system 0:01.94elapsed 217%CPU (0avgtext+0avgdata 0maxresident)k
 0inputs+0outputs (0major+195686minor)pagefaults 0swaps
 
 Running jonderry
-5.52user 0.65system 0:06.18elapsed 99%CPU (0avgtext+0avgdata 0maxresident)k
+5.53user 0.63system 0:06.17elapsed 99%CPU (0avgtext+0avgdata 0maxresident)k
 0inputs+0outputs (0major+427528minor)pagefaults 0swaps
 
 Running zjarek
-7.72user 0.20system 0:02.65elapsed 298%CPU (0avgtext+0avgdata 0maxresident)k
+7.72user 0.20system 0:02.66elapsed 297%CPU (0avgtext+0avgdata 0maxresident)k
 0inputs+0outputs (0major+98001minor)pagefaults 0swaps
+
+Running koumes21
+initializing...
+loading data...
+assigning partitions...
+filling buckets...
+sorting buckets...
+done.
+8.05user 0.42system 0:01.22elapsed 692%CPU (0avgtext+0avgdata 0maxresident)k
+0inputs+0outputs (0major+244747minor)pagefaults 0swaps
 
 Running ForkJoinQuicksortTask
 Starting parallel computation
-13.20user 0.22system 0:02.27elapsed 590%CPU (0avgtext+0avgdata 0maxresident)k
-0inputs+0outputs (2major+205513minor)pagefaults 0swaps
+12.57user 0.24system 0:02.23elapsed 574%CPU (0avgtext+0avgdata 0maxresident)k
+0inputs+0outputs (2major+206490minor)pagefaults 0swaps
 

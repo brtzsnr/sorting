@@ -1,4 +1,4 @@
-OBJECTS=mysort gsort stdsort threadsort tbbsort damascussteel jonderry zjarek ForkJoinQuicksortTask
+OBJECTS=mysort gsort stdsort threadsort tbbsort damascussteel jonderry zjarek koumes21 ForkJoinQuicksortTask
 TBB=/home/ami650/src/gcc-4.6.0/tbb30_20110427oss/
 JAVA_HOME=/home/ami650/src/java/jdk1.7.0/
 
@@ -44,15 +44,9 @@ tbbsort:
 	echo
 
 damascussteel:
-	g++ -O3 -march=native -std=c++0x -DSPLIT=16 damascussteel.cpp -o damascussteel -pthread
+	g++ -O3 -march=native -std=c++0x -DSPLIT=8 damascussteel.cpp -o damascussteel -pthread
 	echo Running $@
 	/usr/bin/time ./damascussteel 50000000
-	echo
-
-zjarek:
-	g++ -O3 -march=native -std=c++0x -DSPLIT=16 zjarek.cpp -o zjarek -pthread
-	echo Running $@
-	/usr/bin/time ./zjarek
 	echo
 
 jonderry:
@@ -61,8 +55,20 @@ jonderry:
 	/usr/bin/time ./jonderry 50000000
 	echo
 
+zjarek:
+	g++ -O3 -march=native -std=c++0x -DSPLIT=16 zjarek.cpp -o zjarek -pthread
+	echo Running $@
+	/usr/bin/time ./zjarek
+	echo
+
+koumes21:
+	g++ -O3 -march=native -std=c++0x -I${TBB}/include -L${TBB}/build/linux_intel64_gcc_cc4.6.1_libc2.5_kernel2.6.18_release koumes21.cpp -o koumes21 -pthread -ltbb
+	echo Running $@
+	/usr/bin/time ./koumes21 50000000
+	echo
+
 ForkJoinQuicksortTask:
 	${JAVA_HOME}/bin/javac ForkJoinQuicksortTask.java
 	echo Running $@
-	/usr/bin/time ${JAVA_HOME}/bin/java ForkJoinQuicksortTask 50000000
+	/usr/bin/time ${JAVA_HOME}/bin/java -server ForkJoinQuicksortTask 50000000
 	echo
