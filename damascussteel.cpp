@@ -56,7 +56,7 @@ void sort_subpart(const int start, const int end, double *dbuf_local,
     {
       for (int w = start_step, v = 0; w < 64; w += step, v++)
         {
-          int p = (ibuf[i] >> w) & mask;
+          int p = (~ibuf[i] >> w) & mask;
           (cnt[v][p])++;
         }
     }
@@ -78,14 +78,13 @@ void sort_subpart(const int start, const int end, double *dbuf_local,
 
       for (int i = start; i < end; i++)
         {
-          int p = (ibuf[i] >> w) & mask;
+          int p = (~ibuf[i] >> w) & mask;
           copy_local[start+((cnt[v][p])++)] = dbuf_local[i];
         }
       std::swap(copy_local,dbuf_local);
     }
 
   // Do the last set of reversals
-  reverse(dbuf_local+start, dbuf_local + end);
   for (int p = start; p < end; p++)
     if (dbuf_local[p] >= 0.)
       {
