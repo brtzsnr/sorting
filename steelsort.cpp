@@ -4,6 +4,8 @@
 #include <ctime>
 #include <iostream>
 #include <thread>
+#include <cassert>
+#include <vector>
 
 using std::fill;
 using std::reverse;
@@ -15,6 +17,8 @@ typedef unsigned long long ull;
 #endif
 
 const int step = STEP;
+const int start_step=24;
+const int num_steps=(64-start_step)/step;
 int size;
 double *dbuf, *copy;
 
@@ -36,48 +40,70 @@ const double distrib[]={0,
                         1.1503,
                         1.5341};
 
-void sort(int s, int e, const int start, const int end, double **dbuf_local,
-          double **copy_local)
-{
-  ull *ibuf = (ull *) (*dbuf_local);
-  ull mask = (1 << (e - s)) - 1;
-  int cnt[mask+1];
-
-  fill(cnt, cnt + (1 << (e - s)), 0);
-  for (int i = start; i < end; i++) {
-    int p = (ibuf[i] >> s) & mask;
-    cnt[p]++;
-  }
-
-  int sum = 0;
-  for (int i = 0; i <= mask; i++) {
-    int tmp = sum + cnt[i];
-    cnt[i] = sum;
-    sum = tmp;
-  }
-
-  for (int i = start; i < end; i++) {
-    int p = (ibuf[i] >> s) & mask;
-    (*copy_local)[start+cnt[p]++] = (*dbuf_local)[i];
-  }
-
-  double *tmp = *copy_local;
-  *copy_local = *dbuf_local;
-  *dbuf_local = tmp;
-}
-
 void sort_subpart(const int start, const int end, double *dbuf_local,
                   double *copy_local)
 {
-  for (int i = 0; i < 64; i += step) {
-    sort(i, i + step, start, end, &dbuf_local, &copy_local);
-  }
+  ull mask = (1 << step) - 1;
+  int cnt[num_steps][mask+1];
 
-  int p;
-  for (p = start; p < end; p++)
-    if (dbuf_local[p] < 0) break;
-  reverse(dbuf_local+start, dbuf_local + p);
+  ull *ibuf = (ull *) (dbuf_local);
+
+  for(int i=0;i<num_steps;++i)
+    for(int j=0;j<mask+1;++j)
+      cnt[i][j]=0;
+
+  for (int i = start; i < end; i++)
+    {
+      for (int w = start_step, v = 0; w < 64; w += step, v++)
+        {
+          int p = (ibuf[i] >> w) & mask;
+          (cnt[v][p])++;
+        }
+    }
+
+  std::vector<int> sum(num_steps,0);
+  for (int i = 0; i <= mask; i++)
+    {
+      for (int w = start_step, v = 0; w < 64; w += step, v++)
+        {
+          int tmp = sum[v] + cnt[v][i];
+          cnt[v][i] = sum[v];
+          sum[v] = tmp;
+        }
+    }
+
+  for (int w = start_step, v = 0; w < 64; w += step, v++)
+    {
+      ibuf = (ull *) dbuf_local;
+
+      for (int i = start; i < end; i++)
+        {
+          int p = (ibuf[i] >> w) & mask;
+          copy_local[start+((cnt[v][p])++)] = dbuf_local[i];
+        }
+      std::swap(copy_local,dbuf_local);
+    }
+
+  // Do the last set of reversals
   reverse(dbuf_local+start, dbuf_local + end);
+  for (int p = start; p < end; p++)
+    if (dbuf_local[p] >= 0.)
+      {
+        reverse(dbuf_local+p, dbuf_local + end);
+        break;
+      }
+
+  // Insertion sort
+  for (int i = start+1; i < end; i++) {
+    double value = dbuf_local[i];
+    if (value < dbuf_local[i - 1]) {
+      dbuf_local[i] = dbuf_local[i - 1];
+      int p = i - 1;
+      for (; p > 0 && value < dbuf_local[p - 1]; p--)
+        dbuf_local[p] = dbuf_local[p - 1];
+      dbuf_local[p] = value;
+    }
+  }
 }
 
 void pivot(double* start,double * end, double middle, size_t& koniec)
@@ -150,12 +176,17 @@ int main(int argc, char **argv) {
   std::thread ts4(sort_part,end3,size,dbuf,copy,3*n_partitions/4);
   ts1.join(),ts2.join(),ts3.join(),ts4.join();
 
-  if((64/step)%2==1)
+  if(num_steps%2==1)
     std::swap(dbuf,copy);
 
-  // for (int i=0; i<size-1; i++){
-  //   if (dbuf[i]>dbuf[i+1]) printf("BLAD\n");
-  // }
+  for (int i=0; i<size-1; i++){
+    if (dbuf[i]>dbuf[i+1])
+      std::cout << "BAD "
+                << i << " "
+                << dbuf[i] << " "
+                << dbuf[i+1] << " "
+                << "\n";
+  }
 
   std::cout << "Finished after "
             << (double) ((clock() - c0)) / CLOCKS_PER_SEC
