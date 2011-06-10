@@ -7,6 +7,8 @@
 
 using namespace std;
 
+typedef unsigned long long ull;
+
 double signum(double x) {
     return (x<0) ? -1 : (x>0) ? 1 : 0;
 }
@@ -68,16 +70,19 @@ void print(const int* arr, int len) {
 
 void fillBuckets(int N, int bucketCount,
         double* data, int* partitions,
-        double* buckets, int* offsets, int* sizes) {
+        double* buckets, int* offsets) {
     for (int i = 0; i < N; ++i) {
-        ++sizes[partitions[i]];
+        ++offsets[partitions[i]];
     }
+
     int offset = 0;
     for (int i = 0; i < bucketCount; ++i) {
+        int t = offsets[i];
         offsets[i] = offset;
-        offset += sizes[i];
+        offset += t;
     }
     offsets[bucketCount] = N;
+
     int next[bucketCount];
     memset(next, 0, sizeof(next));
     for (int i = 0; i < N; ++i) {
@@ -95,20 +100,91 @@ public:
         this->offsets = offsets;
     }
 
-    void operator() (tbb::blocked_range<size_t>& range) const {
+    static void radixSort(double* arr, int len) {
+        ull* encoded = (ull*)arr;
+        for (int i = 0; i < len; ++i) {
+            ull n = encoded[i];
+            if (n & signBit) {
+                n ^= allBits;
+            } else {
+                n ^= signBit;
+            }
+            encoded[i] = n;
+        }
+
+        const int step = 11;
+        const ull mask = (1ull << step) - 1;
+        int offsets[8][1ull << step];
+        memset(offsets, 0, sizeof(offsets));
+
+        for (int i = 0; i < len; ++i) {
+            for (int b = 0, j = 0; b < 64; b += step, ++j) {
+                int p = (encoded[i] >> b) & mask;
+                ++offsets[j][p];
+            }
+        }
+
+        int sum[8] = {0};
+        for (int i = 0; i <= mask; i++) {
+            for (int b = 0, j = 0; b < 64; b += step, ++j) {
+                int t = sum[j] + offsets[j][i];
+                offsets[j][i] = sum[j];
+                sum[j] = t;
+            }
+        }
+
+        ull* copy = new ull[len];
+        ull* current = encoded;
+        for (int b = 0, j = 0; b < 64; b += step, ++j) {
+            for (int i = 0; i < len; ++i) {
+                int p = (current[i] >> b) & mask;
+                copy[offsets[j][p]] = current[i];
+                ++offsets[j][p];
+            }
+
+            ull* t = copy;
+            copy = current;
+            current = t;
+        }
+
+        if (current != encoded) {
+            for (int i = 0; i < len; ++i) {
+                encoded[i] = current[i];
+            }
+        }
+
+        for (int i = 0; i < len; ++i) {
+            ull n = encoded[i];
+            if (n & signBit) {
+                n ^= signBit;
+            } else {
+                n ^= allBits;
+            }
+            encoded[i] = n;
+        }
+    }
+
+    void operator() (tbb::blocked_range<int>& range) const {
         for (int i = range.begin(); i < range.end(); ++i) {
-            std::sort(&data[offsets[i]], &data[offsets[i+1]]);
+            double* begin = &data[offsets[i]];
+            double* end = &data[offsets[i+1]];
+            //std::sort(begin, end);
+            radixSort(begin, end-begin);
         }
     }
 
 private:
     double* data;
     int* offsets;
+    static const ull signBit = 1ull << 63;
+    static const ull allBits = ~0ull;
 };
 
 void sortBuckets(int bucketCount, double* data, int* offsets) {
-    tbb::parallel_for(tbb::blocked_range<size_t>(0, bucketCount),
-            Sorter(data, offsets));
+    Sorter sorter(data, offsets);
+    tbb::blocked_range<int> range(0, bucketCount);
+    tbb::parallel_for(range, sorter);
+    //sorter(range);
 }
 
 class Partitioner {
@@ -119,7 +195,7 @@ public:
         this->bucketCount = bucketCount;
     }
 
-    void operator() (tbb::blocked_range<size_t>& range) const {
+    void operator() (tbb::blocked_range<int>& range) const {
         for (int i = range.begin(); i < range.end(); ++i) {
             double d = data[i];
             int p = (int) (cdfApprox(d) * bucketCount);
@@ -133,6 +209,9 @@ private:
     int bucketCount;
 };
 
+const int bucketCount = 512;
+int offsets[bucketCount + 1];
+
 int main(int argc, char** argv) {
     if (argc != 2) {
         printf("Usage: %s N\n N = the size of the input\n", argv[0]);
@@ -142,11 +221,8 @@ int main(int argc, char** argv) {
     puts("initializing...");
     int N = atoi(argv[1]);
     double* data = new double[N];
-    int bucketCount = 256;
     double* buckets = new double[N];
-    int* sizes = new int[bucketCount];
-    memset(sizes, 0, sizeof(sizes));
-    int* offsets = new int[bucketCount + 1];
+    memset(offsets, 0, sizeof(offsets));
     int* partitions = new int[N];
 
     puts("loading data...");
@@ -158,11 +234,11 @@ int main(int argc, char** argv) {
     //print(data, N);
 
     puts("assigning partitions...");
-    tbb::parallel_for(tbb::blocked_range<size_t>(0, N),
+    tbb::parallel_for(tbb::blocked_range<int>(0, N),
             Partitioner(bucketCount, data, partitions));
 
     puts("filling buckets...");
-    fillBuckets(N, bucketCount, data, partitions, buckets, offsets, sizes);
+    fillBuckets(N, bucketCount, data, partitions, buckets, offsets);
     data = buckets;
 
     puts("sorting buckets...");
